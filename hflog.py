@@ -2,30 +2,42 @@
 Shortwave Ethnographic Logging Tool
 Author: Joshua Homan
 
-TO-DO: 
-
-1. Convert save_data() function to write to SQL database
-2. Convert GUI to wxPython or other API
-3. Pickle placenames file and write de-pickle function
-4. Implement timer function for each broadcast/call
-5. Geo-code placenames and connect to ArcGIS database to run analysis for connections between communities -- placenames coordinates should be tab-delimited
-6. Integrate kinship and social relationship information somehow -- autocomplete on speaker based on kinship 
-   database (with connectiosn already set)
-7. Record line-in and link to DB entry for later analysis
+TODO: Convert save_data() function to write to SQL database
+TODO: Convert GUI to wxPython or other API
+TODO: Implement timer function for each broadcast/call
+TODO: Geo-code placenames
+TODO: Implement JSON parsing of language file
+TODO: Integrate kinship and social relationship information somehow -- autocomplete on speaker based on kinship database
+TODO: Record line-in audio and link to DB entry for later analysis
 
 """
 
 from tkinter import *
 import tkinter.messagebox
 from datetime import datetime
+import json
 
-## Read placenames from file -- how to geocode this for future analysis?
+class Place:
+	def __init__(self, name, latitude, longitude):
+		self.name = name
+		self.latitude = latitude
+		self.longitude = longitude
+
+class Call:
+	def __init__(self, place_one, place_two, participant_one, participant_two, topic, time, date):
+		self.place_one = place_one
+		self.place_two = place_two
+		self.participant_one = participant_one
+		self.participant_two = participant_two
+		self.topic = topic
+		self.time = time
+		self.date = datetime(date)
 
 def read_places(file):
     places = []
-    place_f = open(file)
-    for line in place_f:
-        places.append(line.rstrip())
+    with open(file, 'r') as place_file:
+        for line in place_file:
+            places.append(line.rstrip())
     return places
 
 ## Write data to textfile 
@@ -48,7 +60,7 @@ def save_data():
 		fileD.write("-=-" * 20)
 		fileD.write("\n\n")
 		band.set(None)
-		speakerOnePlace.set(None)
+		speaker_one_place.set(None)
 		speakerTwoPlace.set(None)
 		frequency.delete(0, END)
 		speakerOne.delete(0, END)
@@ -62,7 +74,7 @@ def save_data():
 ## If unable, try to make classes for positioning
 
 app = Tk()
-app.title('Shortwave Amazonia - Radio Log')
+app.title('Shortwave Radio Log')
 
 Label(app, text = "Frequency").pack()
 frequency = Entry(app)
@@ -79,10 +91,12 @@ speakerOne = Entry(app)
 speakerOne.pack()
 
 Label(app, text = "Speaker One's Location").pack()
-speakerOnePlace = StringVar()
-speakerOnePlace.set(None)
-optionsOne = read_places("places.txt")
-OptionMenu(app, speakerOnePlace, *optionsOne).pack()
+speaker_one_place = StringVar()
+options_one = read_places("./places.txt")
+speaker_one_place.set(None)
+dropdown_one = OptionMenu(app, speaker_one_place, options_one)
+dropdown_one['width'] = 10
+dropdown_one.pack()
 
 Label(app, text = "Speaker Two").pack()
 speakerTwo = Entry(app)
@@ -91,8 +105,10 @@ speakerTwo.pack()
 Label(app, text = "Speaker Two's Location").pack()
 speakerTwoPlace = StringVar()
 speakerTwoPlace.set(None)
-optionsTwo = read_places("places.txt")
-OptionMenu(app, speakerTwoPlace, *optionsTwo).pack()
+optionsTwo = read_places("./places.txt")
+dropdown_two = OptionMenu(app, speakerTwoPlace, optionsTwo)
+dropdown_two['width'] = 10
+dropdown_two.pack()
 
 Label(app, text = "Language:").pack()
 language = StringVar()
