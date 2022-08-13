@@ -2,10 +2,12 @@
 Shortwave Ethnographic Logging Tool
 Author: Joshua Homan
 
-TODO: Convert GUI to wxPython or other API
-TODO: Implement timer function for each broadcast/call
-TODO: Implement JSON parsing of language file
-TODO: Record line-in audio and link to DB entry for later analysis
+This is a simple tool to log shortwave radio calls during ethnographic fieldwork.
+
+TODO: Add timer function for each broadcast/call
+TODO: Add parsing of language file and auto-completion for entry
+TODO: Add place entry tab 
+TODO: Record line-in audio for each entry
 
 """
 
